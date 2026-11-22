@@ -92,6 +92,8 @@ h3 { font-size: 1.05rem; margin-bottom: 0.35rem; }
   letter-spacing: 0.06em;
 }
 
+.lock-mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
+
 .lock-card h1 { font-size: 1.8rem; margin-bottom: 0.3rem; }
 .lock-card .muted { font-size: 0.9rem; margin-bottom: 1.8rem; }
 
