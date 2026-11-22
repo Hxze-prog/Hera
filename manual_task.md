@@ -6,22 +6,22 @@ Code work is finished — these are the remaining steps. Work top to bottom.
 ## 1. Supabase project
 
 - [x] Create a Supabase project: `open-when-care-package`.
-- [ ] Copy the **Project URL** and **anon/public key** from Project Settings → API.
-- [ ] Authentication → Providers → Email: enable it.
-- [ ] Authentication → Providers → Email: turn OFF "Confirm email".
-- [ ] Authentication → Settings: turn OFF public sign-ups.
+- [x] Copy the **Project URL** and **anon/public key** from Project Settings → API.
+- [x] Authentication → Providers → Email: enable it.
+- [x] Authentication → Providers → Email: turn OFF "Confirm email".
+- [x] Authentication → Settings: turn OFF public sign-ups.
 - [x] Authentication → Users → both accounts created:
   - Admin: `Shion@internal.local` — UID `0db78e95-4eb1-4864-9079-5739f38241a1`.
   - Her: `Hera@internal.local` — UID `090235c3-6244-47f0-9414-8b6fcef1fc19`.
-- [ ] SQL Editor → run `supabase/schema.sql` from this project. UIDs are already filled in, and the blocked `ALTER TABLE storage.objects` line was removed (RLS is already on by default).
-- [ ] SQL Editor → confirm RLS is enabled on all five tables.
-- [ ] Storage → confirm `care-package-media` exists and **Public bucket is OFF**.
+- [x] SQL Editor → run `supabase/schema.sql` from this project. UIDs are already filled in, and the blocked `ALTER TABLE storage.objects` line was removed (RLS is already on by default).
+- [x] SQL Editor → confirm RLS is enabled on all five tables.
+- [x] Storage → confirm `care-package-media` exists and **Public bucket is OFF**.
 
 ## 2. Vercel project
 
-- [ ] Import this folder as a new Vercel project (Framework: Other / static).
-- [ ] Project name: something neutral and not guessable.
-- [ ] Add these Environment Variables (Production + Preview):
+- [x] Import this folder as a new Vercel project (Framework: Other / static).
+- [x] Project name: something neutral and not guessable.
+- [x] Add these Environment Variables (Production + Preview):
 
 | Variable | Value |
 | --- | --- |
@@ -33,13 +33,15 @@ Code work is finished — these are the remaining steps. Work top to bottom.
 | `HER_PIN` | `0002` |
 | `HER_EMAIL` | `Hera@internal.local` |
 | `HER_PASSWORD` | the password you set |
-| `HUG_WEBHOOK_URL` | optional Discord/Telegram webhook |
+| `HUG_WEBHOOK_URL` | optional Discord or Slack incoming webhook |
+
+Discord users: paste the channel webhook URL as-is — the app sends the `content` field Discord expects. After adding or changing any env var, create a new Vercel deployment; existing deployments keep the old values.
 
 The Postgres database password is not used by this app — never put it in Vercel env vars or any project file.
 
-- [ ] Deploy.
+- [x] Deploy.
 - [ ] Add a custom domain if you want one (keep it non-obvious).
-- [ ] Confirm the site is served over HTTPS.
+- [x] Confirm the site is served over HTTPS.
 
 ## 3. First-run setup (after deploy)
 
@@ -52,7 +54,7 @@ The Postgres database password is not used by this app — never put it in Verce
 - [ ] Create one test envelope with a photo + voice note as `0001`.
 - [ ] Open it as `0002` → photo and audio play correctly.
 - [ ] Redeem a test voucher as `0002` → admin sees the redeemed state.
-- [ ] Tap Send a Hug → ping logged (and webhook fires if configured).
+- [ ] Unlock with `0002` → tap Send a Hug (button is hidden for `0001`) → "Last hug" updates and the Discord message appears if `HUG_WEBHOOK_URL` is set.
 
 ## 4. Real-device checks
 

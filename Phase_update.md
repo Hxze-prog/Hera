@@ -36,24 +36,37 @@ Tracking file created: 2026-11-23
 | Phase 5 — Admin Studio (`0001`) | FINISHED | Admin-only view plus CRUD forms for letters, memories, vouchers, settings, and private-bucket media upload/delete. |
 | Phase 6 — Security Audit, Testing & Launch | READY — MANUAL PENDING | Code-side audit passed: no secrets in static files, noindex headers, no-store API responses, SW never caches `/api`, `/auth`, `/rest`, `/storage`. Deployment, browser audit, device tests, and seeding remain. |
 
+### 2026-11-23 — Phases 1 & 2 complete
+
+| Phase | Status | Notes |
+| --- | --- | --- |
+| Phase 1 — Supabase Foundation | FINISHED | Supabase project, Auth settings, both accounts, `schema.sql`, RLS, and the private bucket are verified. |
+| Phase 2 — Vercel Environment & `/api/unlock` | FINISHED | Env vars set and deployed; `/api/config`, `/api/unlock`, `/api/refresh`, `/api/ping` are live. Discord webhook payload fixed to use `content`. |
+| Phase 3 — Core PWA Shell, Lock Screen & Navigation | FINISHED | No change. |
+| Phase 4 — Content Modules & Media Playback | FINISHED | No change. |
+| Phase 5 — Admin Studio (`0001`) | FINISHED | No change. |
+| Phase 6 — Security Audit, Testing & Launch | READY — MANUAL PENDING | In-app verification, real-device tests, and content seeding remain. |
+
 ---
 
 ## Phase Detail
 
 ### Phase 1 — Supabase Foundation
 
-- Enable Email/Password auth, disable public sign-ups — PENDING (manual)
-- Create `admin@internal.local` and `her@internal.local`, capture both UIDs — PENDING (manual)
-- Create `envelopes`, `memories`, `vouchers`, `app_settings`, `pings` tables — FINISHED in `supabase/schema.sql` / PENDING (manual execution)
-- Apply strict RLS policies tied to exact UIDs — FINISHED in `supabase/schema.sql` / PENDING (manual execution)
-- Create private `care-package-media` bucket with storage policies — FINISHED in `supabase/schema.sql` / PENDING (manual execution)
+- Enable Email/Password auth, disable public sign-ups — FINISHED
+- Create `Shion@internal.local` and `Hera@internal.local`, capture both UIDs — FINISHED
+- Create `envelopes`, `memories`, `vouchers`, `app_settings`, `pings` tables — FINISHED
+- Apply strict RLS policies tied to exact UIDs — FINISHED
+- Create private `care-package-media` bucket with storage policies — FINISHED
 
 ### Phase 2 — Vercel Environment & `/api/unlock`
 
-- Configure Vercel environment variables — PENDING (manual)
+- Configure Vercel environment variables — FINISHED
 - Build `/api/unlock` with validation, throttling, and clean `401`/`429` responses — FINISHED
 - Build supporting `/api/refresh`, `/api/config`, `/api/ping` endpoints — FINISHED
 - `vercel.json` noindex/no-store/security headers — FINISHED
+- Deploy over HTTPS — FINISHED (redeploy required after any env-var change)
+- Discord hug webhook uses the `content` field — FINISHED
 
 ### Phase 3 — Core PWA Shell, Lock Screen & Navigation
 
@@ -78,7 +91,7 @@ Tracking file created: 2026-11-23
 ### Phase 6 — Security Audit, Cross-Device Testing & Launch
 
 - Code-side audit (no static secrets, noindex, no-store API, SW exclusions, RLS separation) — FINISHED
-- Deploy over HTTPS with non-obvious domain — PENDING (manual)
+- Deploy over HTTPS — FINISHED; custom non-obvious domain — PENDING (optional manual)
 - Incognito/DevTools audit before unlock — PENDING (manual)
 - `0002` vs `0001` permission test — PENDING (manual)
 - iOS Safari / Android Chrome install + audio playback test — PENDING (manual)

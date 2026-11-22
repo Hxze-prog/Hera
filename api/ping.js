@@ -50,27 +50,35 @@ export default async function handler(req, res) {
     return json(res, 401, { error: 'Unauthorized' });
   }
 
+  const body = (await readJson(req)) || {};
+
   try {
     const profile = await supabaseFetch('/auth/v1/user', { token });
     if (!profile.ok || !profile.data?.id) {
       return json(res, 401, { error: 'Unauthorized' });
     }
 
-    const body = (await readJson(req)) || {};
     const mood = typeof body.mood === 'string' ? body.mood.slice(0, 120) : '';
     const note = typeof body.note === 'string' ? body.note.slice(0, 500) : '';
     const webhook = process.env.HUG_WEBHOOK_URL;
 
     if (webhook) {
       try {
-        await fetch(webhook, {
+        const message = `Hug ping received${mood ? ` — ${mood}` : ''}${note ? `\n${note}` : ''}`;
+        const response = await fetch(webhook, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            text: `Hug ping received${mood ? ` — ${mood}` : ''}${note ? `\n${note}` : ''}`,
+            content: message,
+            text: message,
             at: new Date().toISOString(),
+            allowed_mentions: { parse: [] },
           }),
         });
+        if (!response.ok) {
+          console.warn('Hug webhook rejected', response.status);
+          return json(res, 200, { ok: true, webhook: false });
+        }
       } catch {
         return json(res, 200, { ok: true, webhook: false });
       }
