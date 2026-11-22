@@ -117,5 +117,5 @@ export function confirm(message, options = {}) {
 }
 
 export function emptyState(message) {
-  return el('div', { class: 'empty', text: message });
+  return el('div', { class: 'empty', text: `🐾 ${message}` });
 }

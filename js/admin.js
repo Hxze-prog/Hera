@@ -3,8 +3,26 @@ import { loadData, reloadSettings } from './data.js';
 import { closeModal, confirm, el, formatDate, openModal, toast } from './ui.js';
 import { renderDistance } from './views/distance.js';
 
+const LETTER_MOODS = [
+  { label: 'You miss me', emoji: '🥺' },
+  { label: 'You have a bad day', emoji: '🩹' },
+  { label: "You can't sleep", emoji: '😴' },
+  { label: 'You need a smile', emoji: '😄' },
+  { label: 'You feel stressed or overwhelmed', emoji: '😰' },
+  { label: 'You need motivation', emoji: '✨' },
+  { label: 'You feel lonely', emoji: '😔' },
+  { label: 'You are mad at me or we had a misunderstanding', emoji: '🤷' },
+];
+
 function field(label, input) {
   return el('label', { class: 'field' }, [el('span', { text: label }), input]);
+}
+
+function selectInput(options, value = '') {
+  const select = el('select');
+  for (const option of options) select.append(el('option', { value: option.value, text: option.label }));
+  select.value = value || '';
+  return select;
 }
 
 function textInput(value = '', options = {}) {
@@ -86,8 +104,19 @@ async function deleteItem(table, item, label, fileFields) {
 
 function envelopeForm(existing) {
   const title = textInput(existing?.title || '', { placeholder: 'Long day' });
-  const icon = textInput(existing?.icon || '', { placeholder: 'Short symbol' });
-  const category = textInput(existing?.category || '', { placeholder: 'For hard days' });
+  const moodOptions = [{ value: '', label: 'Choose a mood...' }];
+  if (existing?.category && !LETTER_MOODS.some((mood) => mood.label === existing.category)) {
+    moodOptions.push({ value: existing.category, label: `Custom: ${existing.category}` });
+  }
+  for (const mood of LETTER_MOODS) {
+    moodOptions.push({ value: mood.label, label: mood.label });
+  }
+  const category = selectInput(moodOptions, existing?.category || '');
+  const selectedMood = () => LETTER_MOODS.find((mood) => mood.label === category.value);
+  const iconPreview = el('div', { class: 'muted small', text: `Icon: ${selectedMood()?.emoji || existing?.icon || '—'}` });
+  category.addEventListener('change', () => {
+    iconPreview.textContent = `Icon: ${selectedMood()?.emoji || existing?.icon || '—'}`;
+  });
   const message = el('textarea', { value: existing?.message || '', placeholder: 'Write the letter...' });
   const song = textInput(existing?.song_embed_url || '', { placeholder: 'https://...' });
   const order = numberInput(existing?.sort_order ?? 0);
@@ -103,6 +132,10 @@ function envelopeForm(existing) {
       toast('Add a title first');
       return;
     }
+    if (!category.value) {
+      toast('Choose a mood first');
+      return;
+    }
     save.disabled = true;
     try {
       let photoPath = existing?.photo_path || null;
@@ -111,8 +144,8 @@ function envelopeForm(existing) {
       if (voice.files?.[0]) voicePath = await uploadFile(voice.files[0], 'envelopes');
       const payload = {
         title: title.value.trim(),
-        icon: icon.value.trim() || 'L',
-        category: category.value.trim() || null,
+        icon: selectedMood()?.emoji || existing?.icon || 'L',
+        category: category.value,
         message: message.value,
         photo_path: photoPath,
         voice_path: voicePath,
@@ -136,7 +169,7 @@ function envelopeForm(existing) {
 
   openModal(el('div', { class: 'form-grid' }, [
     field('Title', title),
-    el('div', { class: 'form-row' }, [field('Icon', icon), field('Category', category)]),
+    field('Category', el('div', {}, [category, iconPreview])),
     field('Letter', message),
     field('Song embed URL (optional)', song),
     el('div', { class: 'form-row' }, [field('Photo', photo), field('Voice note', voice)]),
@@ -201,7 +234,6 @@ function memoryForm(existing) {
 function voucherForm(existing) {
   const title = textInput(existing?.title || '', { placeholder: 'Movie night' });
   const description = el('textarea', { value: existing?.description || '', placeholder: 'What is included?' });
-  const icon = textInput(existing?.icon || '', { placeholder: 'Short symbol' });
   const order = numberInput(existing?.sort_order ?? 0);
   const redeemed = el('input', { type: 'checkbox', checked: Boolean(existing?.is_redeemed) });
 
@@ -216,7 +248,7 @@ function voucherForm(existing) {
       const payload = {
         title: title.value.trim(),
         description: description.value,
-        icon: icon.value.trim() || 'V',
+        icon: '🤍',
         sort_order: Number(order.value) || 0,
         is_redeemed: redeemed.checked,
         redeemed_at: redeemed.checked ? existing?.redeemed_at || new Date().toISOString() : null,
@@ -237,7 +269,7 @@ function voucherForm(existing) {
   openModal(el('div', { class: 'form-grid' }, [
     field('Title', title),
     field('Description', description),
-    el('div', { class: 'form-row' }, [field('Icon', icon), field('Sort order', order)]),
+    field('Sort order', order),
     el('label', { class: 'field' }, [el('span', { text: 'Redeemed' }), redeemed]),
     actions([el('button', { type: 'button', class: 'ghost', text: 'Cancel', on: { click: closeModal } }), save]),
   ]), { title: existing ? 'Edit voucher' : 'New voucher' });

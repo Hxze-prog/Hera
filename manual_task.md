@@ -50,6 +50,7 @@ The Postgres database password is not used by this app — never put it in Verce
 - [ ] Confirm `/api/config` returns only Supabase URL, anon key, and bucket name.
 - [ ] Unlock with `0001` → Admin Studio appears.
 - [ ] Unlock with `0002` → no admin controls appear.
+- [ ] SQL Editor → run `supabase/update_voucher_icons.sql` so all vouchers show 🤍.
 - [ ] Try a wrong PIN 6 times → locked out with `429`.
 - [ ] Create one test envelope with a photo + voice note as `0001`.
 - [ ] Open it as `0002` → photo and audio play correctly.
