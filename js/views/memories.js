@@ -1,6 +1,6 @@
 import { state } from '../state.js';
 import { el, emptyState, formatDate, onModalClose, openModal } from '../ui.js';
-import { createAudioPlayer } from '../media.js';
+import { createAudioPlayer, createVideoPlayer } from '../media.js';
 
 export function renderMemories() {
   const root = document.getElementById('memories-list');
@@ -52,6 +52,17 @@ function openMemory(item) {
     state.client.signedUrl(item.voice_path, 3600).then((url) => {
       if (!url || closed) return;
       const player = createAudioPlayer(url, 'Voice note');
+      onModalClose(player.stop);
+      holder.replaceChildren(player.element);
+    }).catch(() => {});
+  }
+
+  if (item.video_path) {
+    const holder = el('div', {});
+    body.append(holder);
+    state.client.signedUrl(item.video_path, 3600).then((url) => {
+      if (!url || closed) return;
+      const player = createVideoPlayer(url);
       onModalClose(player.stop);
       holder.replaceChildren(player.element);
     }).catch(() => {});

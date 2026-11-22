@@ -27,6 +27,7 @@ create table if not exists public.envelopes (
   message text not null default '',
   photo_path text,
   voice_path text,
+  video_path text,
   song_embed_url text,
   sort_order integer not null default 0,
   is_opened boolean not null default false,
@@ -40,6 +41,7 @@ create table if not exists public.memories (
   memory_date date,
   photo_path text,
   voice_path text,
+  video_path text,
   sort_order integer not null default 0,
   created_at timestamptz not null default now()
 );

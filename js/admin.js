@@ -14,6 +14,8 @@ const LETTER_MOODS = [
   { label: 'You are mad at me or we had a misunderstanding', emoji: '🤷' },
 ];
 
+const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+
 function field(label, input) {
   return el('label', { class: 'field' }, [el('span', { text: label }), input]);
 }
@@ -121,9 +123,11 @@ function envelopeForm(existing) {
   const order = numberInput(existing?.sort_order ?? 0);
   const photo = el('input', { type: 'file', accept: 'image/*' });
   const voice = el('input', { type: 'file', accept: 'audio/*' });
+  const video = el('input', { type: 'file', accept: 'video/*' });
   const hints = [];
   if (existing?.photo_path) hints.push('Photo attached');
   if (existing?.voice_path) hints.push('Voice note attached');
+  if (existing?.video_path) hints.push('Video attached');
 
   const save = el('button', { type: 'button', class: 'primary', text: existing ? 'Save changes' : 'Create letter' });
   save.addEventListener('click', async () => {
@@ -131,12 +135,19 @@ function envelopeForm(existing) {
       toast('Choose a mood first');
       return;
     }
+    const files = [photo.files?.[0], voice.files?.[0], video.files?.[0]].filter(Boolean);
+    if (files.some((file) => file.size > MAX_UPLOAD_BYTES)) {
+      toast('Files must be under 50 MB');
+      return;
+    }
     save.disabled = true;
     try {
       let photoPath = existing?.photo_path || null;
       let voicePath = existing?.voice_path || null;
+      let videoPath = existing?.video_path || null;
       if (photo.files?.[0]) photoPath = await uploadFile(photo.files[0], 'envelopes');
       if (voice.files?.[0]) voicePath = await uploadFile(voice.files[0], 'envelopes');
+      if (video.files?.[0]) videoPath = await uploadFile(video.files[0], 'envelopes');
       const payload = {
         title: category.value,
         icon: selectedMood()?.emoji || existing?.icon || 'L',
@@ -144,6 +155,7 @@ function envelopeForm(existing) {
         message: message.value,
         photo_path: photoPath,
         voice_path: voicePath,
+        video_path: videoPath,
         song_embed_url: song.value.trim() || null,
         sort_order: Number(order.value) || 0,
       };
@@ -151,6 +163,7 @@ function envelopeForm(existing) {
       else await state.client.insert('envelopes', payload);
       if (photo.files?.[0] && existing?.photo_path) await removeFiles([existing.photo_path]);
       if (voice.files?.[0] && existing?.voice_path) await removeFiles([existing.voice_path]);
+      if (video.files?.[0] && existing?.video_path) await removeFiles([existing.video_path]);
       await loadData();
       closeModal();
       renderAdmin();
@@ -166,7 +179,7 @@ function envelopeForm(existing) {
     field('Category', el('div', {}, [category, iconPreview])),
     field('Letter', message),
     field('Song embed URL (optional)', song),
-    el('div', { class: 'form-row' }, [field('Photo', photo), field('Voice note', voice)]),
+    el('div', { class: 'form-row' }, [field('Photo', photo), field('Voice note', voice), field('Video', video)]),
     hints.length ? el('p', { class: 'muted small', text: hints.join(' / ') }) : null,
     field('Sort order', order),
     actions([el('button', { type: 'button', class: 'ghost', text: 'Cancel', on: { click: closeModal } }), save]),
@@ -180,6 +193,11 @@ function memoryForm(existing) {
   const order = numberInput(existing?.sort_order ?? 0);
   const photo = el('input', { type: 'file', accept: 'image/*' });
   const voice = el('input', { type: 'file', accept: 'audio/*' });
+  const video = el('input', { type: 'file', accept: 'video/*' });
+  const hints = [];
+  if (existing?.photo_path) hints.push('Photo attached');
+  if (existing?.voice_path) hints.push('Voice note attached');
+  if (existing?.video_path) hints.push('Video attached');
 
   const save = el('button', { type: 'button', class: 'primary', text: existing ? 'Save changes' : 'Add memory' });
   save.addEventListener('click', async () => {
@@ -187,24 +205,33 @@ function memoryForm(existing) {
       toast('Add a title first');
       return;
     }
+    const files = [photo.files?.[0], voice.files?.[0], video.files?.[0]].filter(Boolean);
+    if (files.some((file) => file.size > MAX_UPLOAD_BYTES)) {
+      toast('Files must be under 50 MB');
+      return;
+    }
     save.disabled = true;
     try {
       let photoPath = existing?.photo_path || null;
       let voicePath = existing?.voice_path || null;
+      let videoPath = existing?.video_path || null;
       if (photo.files?.[0]) photoPath = await uploadFile(photo.files[0], 'memories');
       if (voice.files?.[0]) voicePath = await uploadFile(voice.files[0], 'memories');
+      if (video.files?.[0]) videoPath = await uploadFile(video.files[0], 'memories');
       const payload = {
         title: title.value.trim(),
         caption: caption.value,
         memory_date: date.value || null,
         photo_path: photoPath,
         voice_path: voicePath,
+        video_path: videoPath,
         sort_order: Number(order.value) || 0,
       };
       if (existing) await state.client.update('memories', existing.id, payload);
       else await state.client.insert('memories', payload);
       if (photo.files?.[0] && existing?.photo_path) await removeFiles([existing.photo_path]);
       if (voice.files?.[0] && existing?.voice_path) await removeFiles([existing.voice_path]);
+      if (video.files?.[0] && existing?.video_path) await removeFiles([existing.video_path]);
       await loadData();
       closeModal();
       renderAdmin();
@@ -220,7 +247,8 @@ function memoryForm(existing) {
     field('Title', title),
     field('Caption', caption),
     el('div', { class: 'form-row' }, [field('Date', date), field('Sort order', order)]),
-    el('div', { class: 'form-row' }, [field('Photo', photo), field('Voice note', voice)]),
+    el('div', { class: 'form-row' }, [field('Photo', photo), field('Voice note', voice), field('Video', video)]),
+    hints.length ? el('p', { class: 'muted small', text: hints.join(' / ') }) : null,
     actions([el('button', { type: 'button', class: 'ghost', text: 'Cancel', on: { click: closeModal } }), save]),
   ]), { title: existing ? 'Edit memory' : 'New memory' });
 }
@@ -316,10 +344,10 @@ export function renderAdmin() {
   if (!root) return;
 
   const envelopeRows = state.data.envelopes.map((item) =>
-    row(item.title, item.category || '', () => envelopeForm(item), () => deleteItem('envelopes', item, item.title, ['photo_path', 'voice_path']))
+    row(item.title, item.category || '', () => envelopeForm(item), () => deleteItem('envelopes', item, item.title, ['photo_path', 'voice_path', 'video_path']))
   );
   const memoryRows = state.data.memories.map((item) =>
-    row(item.title, item.memory_date ? formatDate(item.memory_date) : '', () => memoryForm(item), () => deleteItem('memories', item, item.title, ['photo_path', 'voice_path']))
+    row(item.title, item.memory_date ? formatDate(item.memory_date) : '', () => memoryForm(item), () => deleteItem('memories', item, item.title, ['photo_path', 'voice_path', 'video_path']))
   );
   const voucherRows = state.data.vouchers.map((item) =>
     row(item.title, item.is_redeemed ? 'Redeemed' : 'Available', () => voucherForm(item), () => deleteItem('vouchers', item, item.title, []))

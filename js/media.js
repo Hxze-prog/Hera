@@ -61,3 +61,15 @@ export function createAudioPlayer(url, label = 'Voice note') {
     },
   };
 }
+
+export function createVideoPlayer(url) {
+  const video = el('video', { src: url, controls: true, playsInline: true, preload: 'metadata' });
+  return {
+    element: el('div', { class: 'video-player' }, [video]),
+    stop() {
+      video.pause();
+      video.removeAttribute('src');
+      video.load();
+    },
+  };
+}

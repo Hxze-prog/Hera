@@ -52,10 +52,12 @@ The Postgres database password is not used by this app — never put it in Verce
 - [ ] Unlock with `0001` → Admin Studio appears.
 - [ ] Unlock with `0002` → no admin controls appear.
 - [ ] SQL Editor → run `supabase/update_voucher_icons.sql` so all vouchers show 🤍.
+- [ ] SQL Editor → run `supabase/add_video_path.sql` to enable video attachments.
 - [ ] Try a wrong PIN 6 times → locked out with `429`.
-- [ ] Create one test envelope with a photo + voice note as `0001`.
-- [ ] Open it as `0002` → photo and audio play correctly.
+- [ ] Create one test envelope with a photo + voice note + short video as `0001`.
+- [ ] Open it as `0002` → photo, voice note, and video play correctly.
 - [ ] Redeem a test voucher as `0002` → admin sees the redeemed state.
+- [ ] Create one test memory with a short video as `0001` → it plays as `0002`.
 - [ ] Unlock with `0002` → type a message and tap Send message → Discord pings drxvenix, the app shows `Last message`, and a `pings` row with the note is saved.
 - [ ] Unlock with `0002` → tap Send a Hug (button is hidden for `0001`) → "Last hug" updates and the Discord message appears if `HUG_WEBHOOK_URL` is set.
 

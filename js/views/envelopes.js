@@ -1,6 +1,6 @@
 import { state } from '../state.js';
 import { el, emptyState, onModalClose, openModal } from '../ui.js';
-import { createAudioPlayer } from '../media.js';
+import { createAudioPlayer, createVideoPlayer } from '../media.js';
 import { getOpenedIds, markOpened } from '../session.js';
 
 const EMBED_HOSTS = [
@@ -104,6 +104,17 @@ function openEnvelope(item) {
     signedMedia(item.voice_path).then((url) => {
       if (!url || closed) return;
       const player = createAudioPlayer(url, 'Voice note');
+      onModalClose(player.stop);
+      holder.replaceChildren(player.element);
+    });
+  }
+
+  if (item.video_path) {
+    const holder = el('div', {});
+    body.append(holder);
+    signedMedia(item.video_path).then((url) => {
+      if (!url || closed) return;
+      const player = createVideoPlayer(url);
       onModalClose(player.stop);
       holder.replaceChildren(player.element);
     });
