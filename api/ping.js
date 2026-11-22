@@ -18,26 +18,64 @@ async function readJson(req) {
   }
 }
 
-async function supabaseFetch(path, options = {}) {
-  const base = String(process.env.SUPABASE_URL || '').replace(/\/$/, '');
-  const apikey = process.env.SUPABASE_ANON_KEY || '';
-  if (!base || !apikey) throw new Error('supabase_not_configured');
-  const headers = { apikey, ...(options.headers || {}) };
-  if (options.token) headers.Authorization = `Bearer ${options.token}`;
-  if (options.body !== undefined) headers['Content-Type'] = 'application/json';
-  const response = await fetch(`${base}${path}`, {
-    method: options.method || 'GET',
-    headers,
-    body: options.body === undefined ? undefined : JSON.stringify(options.body),
+
+async function sendDiscordWebhook(mood, note, userId) {
+  const webhook = process.env.HUG_WEBHOOK_URL;
+
+  if (!webhook) return false;
+
+  const now = new Date();
+
+  const response = await fetch(webhook, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      content: userId ? `<@${userId}>` : '',
+      embeds: [
+        {
+          title: '🤗 Someone sent you a hug!',
+          description:
+            'A little moment of kindness just arrived. 💜',
+
+          color: 0xA855F7,
+
+          fields: [
+            {
+              name: '💜 Mood',
+              value: mood || 'Not specified',
+              inline: true,
+            },
+            {
+              name: '💌 Message',
+              value: note || '*No personal message provided.*',
+              inline: false,
+            },
+          ],
+
+          thumbnail: {
+            url: 'https://cdn-icons-png.flaticon.com/512/833/833472.png',
+          },
+
+          footer: {
+            text: 'Hug System • Made with love 💜',
+          },
+
+          timestamp: now.toISOString(),
+        },
+      ],
+
+      allowed_mentions: {
+        parse: [],
+        users: userId ? [userId] : [],
+      },
+    }),
   });
-  let data = null;
-  try {
-    data = await response.json();
-  } catch {
-    data = null;
-  }
-  return { ok: response.ok, status: response.status, data };
+
+  return response.ok;
 }
+
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
