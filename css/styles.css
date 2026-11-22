@@ -24,7 +24,6 @@ body {
   margin: 0;
   background-color: var(--bg);
   background-image:
-    linear-gradient(rgba(251, 246, 242, 0.86), rgba(251, 246, 242, 0.92)),
     url('/mobile_bg.png');
   background-size: cover, cover;
   background-position: center, center;
@@ -41,7 +40,6 @@ body {
 @media (min-width: 769px) {
   body {
     background-image:
-      linear-gradient(rgba(251, 246, 242, 0.86), rgba(251, 246, 242, 0.92)),
       url('/website_bg.png');
     background-attachment: fixed, fixed;
   }
