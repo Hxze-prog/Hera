@@ -72,6 +72,7 @@ The Postgres database password is not used by this app — never put it in Verce
 ## 5. Launch
 
 - [ ] Delete test content.
+- [ ] SQL Editor → run `supabase/seed_messages.sql` to load 80 ready-made letters (safe to re-run; skips duplicates).
 - [ ] Seed real envelopes, memories, and vouchers with `0001`.
 - [ ] Set the next meetup/call date in Admin Studio.
 - [ ] Share the app link and PIN `0002` with her.
