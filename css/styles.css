@@ -205,6 +205,39 @@ main {
 
 .badge.redeemed { background: rgba(111, 168, 137, 0.16); color: var(--ok); }
 
+.letter-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+}
+
+.letter-card-header .card-icon,
+.letter-card-header .badge { margin-bottom: 0; }
+
+.letter-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.heart-button {
+  margin-left: auto;
+  border: 0;
+  background: transparent;
+  color: var(--accent);
+  font-size: 1.35rem;
+  line-height: 1;
+  padding: 0.25rem 0.35rem;
+  border-radius: 999px;
+}
+
+.heart-button.loved { color: #d8667f; }
+.heart-button:active { transform: scale(0.9); }
+
 .card p { font-size: 0.9rem; color: var(--muted); margin-bottom: 0; }
 
 .card-actions {

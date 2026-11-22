@@ -1,5 +1,5 @@
 import { state } from '../state.js';
-import { el, emptyState, onModalClose, openModal } from '../ui.js';
+import { el, emptyState, onModalClose, openModal, toast } from '../ui.js';
 import { createAudioPlayer, createVideoPlayer } from '../media.js';
 import { getOpenedIds, markOpened } from '../session.js';
 
@@ -42,6 +42,26 @@ async function signedMedia(path) {
   }
 }
 
+const pendingHearts = new Set();
+
+async function toggleHeart(item) {
+  if (pendingHearts.has(item.id)) return;
+  const next = !item.is_loved;
+  pendingHearts.add(item.id);
+  item.is_loved = next;
+  renderEnvelopes();
+  try {
+    await state.client.update('envelopes', item.id, { is_loved: next });
+    toast(next ? 'Hearted' : 'Heart removed');
+  } catch {
+    item.is_loved = !next;
+    toast('Could not update heart');
+  } finally {
+    pendingHearts.delete(item.id);
+    renderEnvelopes();
+  }
+}
+
 export function renderEnvelopes() {
   const root = document.getElementById('envelopes-list');
   if (!root) return;
@@ -53,15 +73,39 @@ export function renderEnvelopes() {
   const opened = getOpenedIds();
   const cards = items.map((item) => {
     const preview = (item.message || '').replace(/\s+/g, ' ').trim().slice(0, 88);
+    const category = item.category || item.title || 'Letter';
+    const header = el('div', { class: 'letter-card-header' }, [
+      el('span', { class: 'card-icon', text: item.icon || 'L' }),
+      el('span', { class: 'badge', text: category }),
+    ]);
+    const footer = el('div', { class: 'letter-footer' }, [
+      opened.has(item.id) ? el('span', { class: 'muted small', text: 'Opened' }) : null,
+    ]);
+    if (state.role === 'viewer') {
+      const heart = el('button', {
+        type: 'button',
+        class: `heart-button${item.is_loved ? ' loved' : ''}`,
+        'aria-label': item.is_loved ? 'Remove heart' : 'Heart this letter',
+        'aria-pressed': item.is_loved ? 'true' : 'false',
+        text: item.is_loved ? '♥' : '♡',
+        on: {
+          click: (event) => {
+            event.stopPropagation();
+            toggleHeart(item);
+          },
+        },
+      });
+      if (pendingHearts.has(item.id)) heart.disabled = true;
+      footer.append(heart);
+    }
     const card = el('div', { class: 'card clickable', tabIndex: 0, role: 'button' }, [
-      el('div', { class: 'card-icon', text: item.icon || 'L' }),
-      item.category && item.category !== item.title ? el('span', { class: 'badge', text: item.category }) : null,
-      el('h3', { text: item.title }),
+      header,
       el('p', { text: preview ? `${preview}${preview.length === 88 ? '...' : ''}` : 'Open to read.' }),
-      opened.has(item.id) ? el('span', { class: 'badge redeemed', text: 'Opened' }) : null,
+      opened.has(item.id) || state.role === 'viewer' ? footer : null,
     ]);
     card.addEventListener('click', () => openEnvelope(item));
     card.addEventListener('keydown', (event) => {
+      if (event.target !== card) return;
       if (event.key === 'Enter' || event.key === ' ') {
         event.preventDefault();
         openEnvelope(item);
@@ -75,6 +119,7 @@ export function renderEnvelopes() {
 function openEnvelope(item) {
   markOpened(item.id);
   renderEnvelopes();
+  const label = item.category || item.title || 'Letter';
 
   const body = el('div', {});
   let closed = false;
@@ -83,7 +128,7 @@ function openEnvelope(item) {
   });
 
   if (item.photo_path) {
-    const image = el('img', { alt: item.title, loading: 'lazy' });
+    const image = el('img', { alt: label, loading: 'lazy' });
     body.append(el('div', { class: 'polaroid' }, [image]));
     signedMedia(item.photo_path).then((url) => {
       if (url && !closed) image.src = url;
@@ -134,8 +179,5 @@ function openEnvelope(item) {
     }));
   }
 
-  openModal(body, {
-    title: item.icon ? `${item.icon} ${item.title}` : item.title,
-    subtitle: item.category && item.category !== item.title ? item.category : '',
-  });
+  openModal(body, { title: item.icon ? `${item.icon} ${label}` : label });
 }

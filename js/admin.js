@@ -344,7 +344,7 @@ export function renderAdmin() {
   if (!root) return;
 
   const envelopeRows = state.data.envelopes.map((item) =>
-    row(item.title, item.category || '', () => envelopeForm(item), () => deleteItem('envelopes', item, item.title, ['photo_path', 'voice_path', 'video_path']))
+    row(item.title, `${item.category || ''}${item.is_loved ? '  ♥' : ''}`.trim(), () => envelopeForm(item), () => deleteItem('envelopes', item, item.title, ['photo_path', 'voice_path', 'video_path']))
   );
   const memoryRows = state.data.memories.map((item) =>
     row(item.title, item.memory_date ? formatDate(item.memory_date) : '', () => memoryForm(item), () => deleteItem('memories', item, item.title, ['photo_path', 'voice_path', 'video_path']))
