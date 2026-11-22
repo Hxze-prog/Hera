@@ -46,7 +46,7 @@ export function renderDistance() {
       }
       send.disabled = true;
       try {
-        await sendPing(getAccessToken(), { note: text });
+        await sendPing(getAccessToken(), { type: 'message', note: text });
         await state.client.insert('pings', { mood: null, note: text });
         await reloadPings();
         message.value = '';
@@ -70,7 +70,7 @@ export function renderDistance() {
       if (hug.disabled) return;
       hug.disabled = true;
       try {
-        await sendPing(getAccessToken(), {});
+        await sendPing(getAccessToken(), { type: 'hug' });
         await state.client.insert('pings', { mood: null, note: null });
         await reloadPings();
         toast('Hug sent. Love is on its way.');

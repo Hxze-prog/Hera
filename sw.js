@@ -1,4 +1,4 @@
-const CACHE = 'for-you-shell-v10';
+const CACHE = 'for-you-shell-v11';
 
 const SHELL = [
   '/',
