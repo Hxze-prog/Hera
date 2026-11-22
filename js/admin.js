@@ -103,7 +103,6 @@ async function deleteItem(table, item, label, fileFields) {
 }
 
 function envelopeForm(existing) {
-  const title = textInput(existing?.title || '', { placeholder: 'Long day' });
   const moodOptions = [{ value: '', label: 'Choose a mood...' }];
   if (existing?.category && !LETTER_MOODS.some((mood) => mood.label === existing.category)) {
     moodOptions.push({ value: existing.category, label: `Custom: ${existing.category}` });
@@ -128,10 +127,6 @@ function envelopeForm(existing) {
 
   const save = el('button', { type: 'button', class: 'primary', text: existing ? 'Save changes' : 'Create letter' });
   save.addEventListener('click', async () => {
-    if (!title.value.trim()) {
-      toast('Add a title first');
-      return;
-    }
     if (!category.value) {
       toast('Choose a mood first');
       return;
@@ -143,7 +138,7 @@ function envelopeForm(existing) {
       if (photo.files?.[0]) photoPath = await uploadFile(photo.files[0], 'envelopes');
       if (voice.files?.[0]) voicePath = await uploadFile(voice.files[0], 'envelopes');
       const payload = {
-        title: title.value.trim(),
+        title: category.value,
         icon: selectedMood()?.emoji || existing?.icon || 'L',
         category: category.value,
         message: message.value,
@@ -168,7 +163,6 @@ function envelopeForm(existing) {
   });
 
   openModal(el('div', { class: 'form-grid' }, [
-    field('Title', title),
     field('Category', el('div', {}, [category, iconPreview])),
     field('Letter', message),
     field('Song embed URL (optional)', song),

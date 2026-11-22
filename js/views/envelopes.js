@@ -55,7 +55,7 @@ export function renderEnvelopes() {
     const preview = (item.message || '').replace(/\s+/g, ' ').trim().slice(0, 88);
     const card = el('div', { class: 'card clickable', tabIndex: 0, role: 'button' }, [
       el('div', { class: 'card-icon', text: item.icon || 'L' }),
-      item.category ? el('span', { class: 'badge', text: item.category }) : null,
+      item.category && item.category !== item.title ? el('span', { class: 'badge', text: item.category }) : null,
       el('h3', { text: item.title }),
       el('p', { text: preview ? `${preview}${preview.length === 88 ? '...' : ''}` : 'Open to read.' }),
       opened.has(item.id) ? el('span', { class: 'badge redeemed', text: 'Opened' }) : null,
@@ -125,6 +125,6 @@ function openEnvelope(item) {
 
   openModal(body, {
     title: item.icon ? `${item.icon} ${item.title}` : item.title,
-    subtitle: item.category || '',
+    subtitle: item.category && item.category !== item.title ? item.category : '',
   });
 }
