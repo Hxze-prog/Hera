@@ -44,12 +44,43 @@ async function signedMedia(path) {
 
 const pendingHearts = new Set();
 
+function syncHeartButtons(item) {
+  for (const button of document.querySelectorAll('.heart-button')) {
+    if (button.dataset.heartId !== item.id) continue;
+    button.classList.toggle('loved', Boolean(item.is_loved));
+    button.textContent = item.is_loved ? '♥' : '♡';
+    button.setAttribute('aria-label', item.is_loved ? 'Remove heart' : 'Heart this letter');
+    button.setAttribute('aria-pressed', item.is_loved ? 'true' : 'false');
+    button.disabled = pendingHearts.has(item.id);
+  }
+}
+
+function createHeartButton(item) {
+  const button = el('button', {
+    type: 'button',
+    class: `heart-button${item.is_loved ? ' loved' : ''}`,
+    dataset: { heartId: item.id },
+    'aria-label': item.is_loved ? 'Remove heart' : 'Heart this letter',
+    'aria-pressed': item.is_loved ? 'true' : 'false',
+    text: item.is_loved ? '♥' : '♡',
+    on: {
+      click: (event) => {
+        event.stopPropagation();
+        toggleHeart(item);
+      },
+    },
+  });
+  button.disabled = pendingHearts.has(item.id);
+  return button;
+}
+
 async function toggleHeart(item) {
   if (pendingHearts.has(item.id)) return;
   const next = !item.is_loved;
   pendingHearts.add(item.id);
   item.is_loved = next;
   renderEnvelopes();
+  syncHeartButtons(item);
   try {
     await state.client.update('envelopes', item.id, { is_loved: next });
     toast(next ? 'Hearted' : 'Heart removed');
@@ -59,6 +90,7 @@ async function toggleHeart(item) {
   } finally {
     pendingHearts.delete(item.id);
     renderEnvelopes();
+    syncHeartButtons(item);
   }
 }
 
@@ -81,25 +113,10 @@ export function renderEnvelopes() {
     const footer = el('div', { class: 'letter-footer' }, [
       opened.has(item.id) ? el('span', { class: 'muted small', text: 'Opened' }) : null,
     ]);
-    if (state.role === 'viewer') {
-      const heart = el('button', {
-        type: 'button',
-        class: `heart-button${item.is_loved ? ' loved' : ''}`,
-        'aria-label': item.is_loved ? 'Remove heart' : 'Heart this letter',
-        'aria-pressed': item.is_loved ? 'true' : 'false',
-        text: item.is_loved ? '♥' : '♡',
-        on: {
-          click: (event) => {
-            event.stopPropagation();
-            toggleHeart(item);
-          },
-        },
-      });
-      if (pendingHearts.has(item.id)) heart.disabled = true;
-      footer.append(heart);
-    }
+    if (state.role === 'viewer') footer.append(createHeartButton(item));
     const card = el('div', { class: 'card clickable', tabIndex: 0, role: 'button' }, [
       header,
+      el('p', { class: 'letter-title', text: item.title || category }),
       el('p', { text: preview ? `${preview}${preview.length === 88 ? '...' : ''}` : 'Open to read.' }),
       opened.has(item.id) || state.role === 'viewer' ? footer : null,
     ]);
@@ -119,7 +136,8 @@ export function renderEnvelopes() {
 function openEnvelope(item) {
   markOpened(item.id);
   renderEnvelopes();
-  const label = item.category || item.title || 'Letter';
+  const title = item.title || item.category || 'Letter';
+  const category = item.category || '';
 
   const body = el('div', {});
   let closed = false;
@@ -128,7 +146,7 @@ function openEnvelope(item) {
   });
 
   if (item.photo_path) {
-    const image = el('img', { alt: label, loading: 'lazy' });
+    const image = el('img', { alt: title, loading: 'lazy' });
     body.append(el('div', { class: 'polaroid' }, [image]));
     signedMedia(item.photo_path).then((url) => {
       if (url && !closed) image.src = url;
@@ -179,5 +197,9 @@ function openEnvelope(item) {
     }));
   }
 
-  openModal(body, { title: item.icon ? `${item.icon} ${label}` : label });
+  openModal(body, {
+    title: item.icon ? `${item.icon} ${title}` : title,
+    subtitle: category,
+    action: state.role === 'viewer' ? createHeartButton(item) : null,
+  });
 }

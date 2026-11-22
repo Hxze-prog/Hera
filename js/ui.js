@@ -79,7 +79,7 @@ export function openModal(content, options = {}) {
       el('h2', { text: options.title || '' }),
       options.subtitle ? el('p', { class: 'muted small', text: options.subtitle }) : null,
     ]),
-    closeButton,
+    el('div', { class: 'modal-actions' }, [options.action || null, closeButton]),
   ]);
   const modal = el('div', { class: 'modal', role: 'dialog', 'aria-modal': 'true' }, [head, content]);
   root.replaceChildren(modal);

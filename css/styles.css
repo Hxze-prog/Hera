@@ -22,13 +22,29 @@ html, body { min-height: 100%; }
 
 body {
   margin: 0;
-  background: radial-gradient(120% 90% at 50% -10%, #fff1ee 0%, var(--bg) 55%) fixed;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(rgba(251, 246, 242, 0.86), rgba(251, 246, 242, 0.92)),
+    url('/mobile_bg.png');
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
+  background-attachment: scroll, scroll;
   color: var(--text);
   font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
+}
+
+@media (min-width: 769px) {
+  body {
+    background-image:
+      linear-gradient(rgba(251, 246, 242, 0.86), rgba(251, 246, 242, 0.92)),
+      url('/website_bg.png');
+    background-attachment: fixed, fixed;
+  }
 }
 
 button, input, textarea, select { font: inherit; }
@@ -239,6 +255,7 @@ main {
 .heart-button:active { transform: scale(0.9); }
 
 .card p { font-size: 0.9rem; color: var(--muted); margin-bottom: 0; }
+.card .letter-title { color: var(--text); font-size: 0.95rem; font-weight: 600; margin-bottom: 0.4rem; }
 
 .card-actions {
   display: flex;
@@ -375,6 +392,8 @@ main {
 .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
 .modal-head h2 { margin-bottom: 0.15rem; }
 .close-button { border: 0; background: var(--surface); color: var(--muted); border-radius: 50%; width: 34px; height: 34px; font-size: 1.2rem; }
+.modal-actions { display: flex; align-items: center; gap: 0.35rem; flex: 0 0 auto; }
+.modal-actions .heart-button { margin-left: 0; font-size: 1.5rem; }
 
 .form-grid { display: grid; gap: 0.9rem; }
 .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.9rem; }

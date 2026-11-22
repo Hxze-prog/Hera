@@ -1,10 +1,12 @@
-const CACHE = 'for-you-shell-v6';
+const CACHE = 'for-you-shell-v9';
 
 const SHELL = [
   '/',
   '/index.html',
   '/css/styles.css',
   '/manifest.json',
+  '/mobile_bg.png',
+  '/website_bg.png',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/icon-maskable-512.png',

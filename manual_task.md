@@ -54,10 +54,11 @@ The Postgres database password is not used by this app — never put it in Verce
 - [ ] SQL Editor → run `supabase/update_voucher_icons.sql` so all vouchers show 🤍.
 - [ ] SQL Editor → run `supabase/add_video_path.sql` to enable video attachments.
 - [ ] SQL Editor → run `supabase/add_envelope_loved.sql` to enable heart reactions.
+- [ ] SQL Editor → run `supabase/add_envelope_index_per_category.sql` to backfill numbered titles (re-run `add_envelope_loved.sql` first if hearts were already applied).
 - [ ] Try a wrong PIN 6 times → locked out with `429`.
-- [ ] Create one test envelope with a photo + voice note + short video as `0001`.
+- [ ] Create one test envelope as `0001` → title auto-numbers like `Always Here #1`; add a photo + voice note + short video.
 - [ ] Open it as `0002` → photo, voice note, and video play correctly.
-- [ ] Heart it as `0002` → heart fills; tap again → heart clears; admin row shows ♥.
+- [ ] Heart it as `0002` on the card and in the modal → heart fills; tap again → heart clears; admin row shows ♥.
 - [ ] Redeem a test voucher as `0002` → admin sees the redeemed state.
 - [ ] Create one test memory with a short video as `0001` → it plays as `0002`.
 - [ ] Unlock with `0002` → type a message and tap Send message → Discord pings drxvenix, the app shows `Last message`, and a `pings` row with the note is saved.

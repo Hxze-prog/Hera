@@ -4,17 +4,24 @@ import { closeModal, confirm, el, formatDate, openModal, toast } from './ui.js';
 import { renderDistance } from './views/distance.js';
 
 const LETTER_MOODS = [
-  { label: 'You miss me', emoji: '🥺' },
-  { label: 'You have a bad day', emoji: '🩹' },
-  { label: "You can't sleep", emoji: '😴' },
-  { label: 'You need a smile', emoji: '😄' },
-  { label: 'You feel stressed or overwhelmed', emoji: '😰' },
-  { label: 'You need motivation', emoji: '✨' },
-  { label: 'You feel lonely', emoji: '😔' },
-  { label: 'You are mad at me or we had a misunderstanding', emoji: '🤷' },
+  { label: 'You miss me', emoji: '🥺', title: 'Always Here' },
+  { label: 'You have a bad day', emoji: '🩹', title: 'Deep Breath' },
+  { label: "You can't sleep", emoji: '😴', title: 'Rest Easy' },
+  { label: 'You need a smile', emoji: '😄', title: 'Smile Now' },
+  { label: 'You feel stressed or overwhelmed', emoji: '😰', title: 'Slow Down' },
+  { label: 'You need motivation', emoji: '✨', title: "You've Got This" },
+  { label: 'You feel lonely', emoji: '😔', title: 'Never Alone' },
+  { label: 'You are mad at me or we had a misunderstanding', emoji: '🤷', title: "I'm Listening" },
 ];
 
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+
+function nextEnvelopeIndex(category) {
+  return state.data.envelopes.reduce(
+    (max, item) => (item.category === category ? Math.max(max, Number(item.index_per_category) || 0) : max),
+    0
+  ) + 1;
+}
 
 function field(label, input) {
   return el('label', { class: 'field' }, [el('span', { text: label }), input]);
@@ -135,6 +142,11 @@ function envelopeForm(existing) {
       toast('Choose a mood first');
       return;
     }
+    const preservedIndex = Number(existing?.index_per_category) || 0;
+    const index = category.value === existing?.category && preservedIndex > 0
+      ? preservedIndex
+      : nextEnvelopeIndex(category.value);
+    const title = `${selectedMood()?.title || category.value} #${index}`;
     const files = [photo.files?.[0], voice.files?.[0], video.files?.[0]].filter(Boolean);
     if (files.some((file) => file.size > MAX_UPLOAD_BYTES)) {
       toast('Files must be under 50 MB');
@@ -149,7 +161,8 @@ function envelopeForm(existing) {
       if (voice.files?.[0]) voicePath = await uploadFile(voice.files[0], 'envelopes');
       if (video.files?.[0]) videoPath = await uploadFile(video.files[0], 'envelopes');
       const payload = {
-        title: category.value,
+        title,
+        index_per_category: index,
         icon: selectedMood()?.emoji || existing?.icon || 'L',
         category: category.value,
         message: message.value,
@@ -343,9 +356,10 @@ export function renderAdmin() {
   const root = document.getElementById('admin-content');
   if (!root) return;
 
-  const envelopeRows = state.data.envelopes.map((item) =>
-    row(item.title, `${item.category || ''}${item.is_loved ? '  ♥' : ''}`.trim(), () => envelopeForm(item), () => deleteItem('envelopes', item, item.title, ['photo_path', 'voice_path', 'video_path']))
-  );
+  const envelopeRows = state.data.envelopes.map((item) => {
+    const label = item.title || item.category || 'Letter';
+    return row(label, item.is_loved ? '♥' : '', () => envelopeForm(item), () => deleteItem('envelopes', item, label, ['photo_path', 'voice_path', 'video_path']));
+  });
   const memoryRows = state.data.memories.map((item) =>
     row(item.title, item.memory_date ? formatDate(item.memory_date) : '', () => memoryForm(item), () => deleteItem('memories', item, item.title, ['photo_path', 'voice_path', 'video_path']))
   );

@@ -21,7 +21,7 @@ Instead of a single-purpose letter box, the app is organized into focused, cozy 
 Create clean, modular tables—all with **RLS enabled** and **anonymous access denied**:
 
 1. **`envelopes`**
-   * Fields: `id`, `title`, `icon`, `category` (optional tag), `message`, `photo_path` (nullable), `voice_path` (nullable), `song_embed_url` (nullable), `sort_order`, `is_opened` (or per-session tracking), `created_at`.
+   * Fields: `id`, `title` (auto-numbered like `Always Here #1`), `icon`, `category`, `index_per_category`, `message`, `photo_path` (nullable), `voice_path` (nullable), `video_path` (nullable), `song_embed_url` (nullable), `sort_order`, `is_opened` (or per-session tracking), `is_loved`, `created_at`.
    * Rules: **Both UIDs** can `SELECT`; **only Admin UID (`0001`)** can `INSERT`, `UPDATE`, `DELETE`.
 2. **`memories`**
    * Fields: `id`, `title`, `caption`, `memory_date`, `photo_path`, `voice_path` (nullable), `sort_order`, `created_at`.

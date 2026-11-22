@@ -24,6 +24,7 @@ create table if not exists public.envelopes (
   title text not null,
   icon text not null default '',
   category text,
+  index_per_category integer not null default 0,
   message text not null default '',
   photo_path text,
   voice_path text,
@@ -128,6 +129,7 @@ begin
   if not public.is_admin() then
     if new.id is distinct from old.id
       or new.title is distinct from old.title
+      or new.index_per_category is distinct from old.index_per_category
       or new.icon is distinct from old.icon
       or new.category is distinct from old.category
       or new.message is distinct from old.message
