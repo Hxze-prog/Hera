@@ -11,8 +11,8 @@ Code work is finished — these are the remaining steps. Work top to bottom.
 - [ ] Authentication → Providers → Email: turn OFF "Confirm email".
 - [ ] Authentication → Settings: turn OFF public sign-ups.
 - [x] Authentication → Users → both accounts created:
-  - Admin: `Shion@internal.local` — UID `2f136fef-7680-4ff7-bd83-ff3d7f555d58`.
-  - Her: `Hera@internal.local` — UID `3c8b7174-353f-4712-ae2d-e2b35948990c`.
+  - Admin: `Shion@internal.local` — UID `0db78e95-4eb1-4864-9079-5739f38241a1`.
+  - Her: `Hera@internal.local` — UID `090235c3-6244-47f0-9414-8b6fcef1fc19`.
 - [ ] SQL Editor → run `supabase/schema.sql` from this project. UIDs are already filled in, and the blocked `ALTER TABLE storage.objects` line was removed (RLS is already on by default).
 - [ ] SQL Editor → confirm RLS is enabled on all five tables.
 - [ ] Storage → confirm `care-package-media` exists and **Public bucket is OFF**.

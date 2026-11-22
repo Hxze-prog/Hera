@@ -3,7 +3,7 @@ returns boolean
 language sql
 stable
 as $$
-  select auth.uid() = '2f136fef-7680-4ff7-bd83-ff3d7f555d58'::uuid;
+  select auth.uid() = '0db78e95-4eb1-4864-9079-5739f38241a1'::uuid;
 $$;
 
 create or replace function public.is_her()
@@ -11,7 +11,7 @@ returns boolean
 language sql
 stable
 as $$
-  select auth.uid() = '3c8b7174-353f-4712-ae2d-e2b35948990c'::uuid;
+  select auth.uid() = '090235c3-6244-47f0-9414-8b6fcef1fc19'::uuid;
 $$;
 
 revoke all on function public.is_admin() from public, anon;
