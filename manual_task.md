@@ -34,8 +34,9 @@ Code work is finished — these are the remaining steps. Work top to bottom.
 | `HER_EMAIL` | `Hera@internal.local` |
 | `HER_PASSWORD` | the password you set |
 | `HUG_WEBHOOK_URL` | optional Discord or Slack incoming webhook |
+| `HUG_DISCORD_USER_ID` | `1111664537846951946` (drxvenix; enables the Discord @mention) |
 
-Discord users: paste the channel webhook URL as-is — the app sends the `content` field Discord expects. After adding or changing any env var, create a new Vercel deployment; existing deployments keep the old values.
+Discord users: paste the channel webhook URL as-is — the app sends the `content` field Discord expects. `HUG_DISCORD_USER_ID` is optional; set it to the numeric user ID above so messages actually ping drxvenix. After adding or changing any env var, create a new Vercel deployment; existing deployments keep the old values.
 
 The Postgres database password is not used by this app — never put it in Vercel env vars or any project file.
 
@@ -55,6 +56,7 @@ The Postgres database password is not used by this app — never put it in Verce
 - [ ] Create one test envelope with a photo + voice note as `0001`.
 - [ ] Open it as `0002` → photo and audio play correctly.
 - [ ] Redeem a test voucher as `0002` → admin sees the redeemed state.
+- [ ] Unlock with `0002` → type a message and tap Send message → Discord pings drxvenix, the app shows `Last message`, and a `pings` row with the note is saved.
 - [ ] Unlock with `0002` → tap Send a Hug (button is hidden for `0001`) → "Last hug" updates and the Discord message appears if `HUG_WEBHOOK_URL` is set.
 
 ## 4. Real-device checks

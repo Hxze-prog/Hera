@@ -61,18 +61,21 @@ export default async function handler(req, res) {
     const mood = typeof body.mood === 'string' ? body.mood.slice(0, 120) : '';
     const note = typeof body.note === 'string' ? body.note.slice(0, 500) : '';
     const webhook = process.env.HUG_WEBHOOK_URL;
+    const rawUserId = String(process.env.HUG_DISCORD_USER_ID || '').trim();
+    const userId = /^\d{17,20}$/.test(rawUserId) ? rawUserId : '';
 
     if (webhook) {
       try {
-        const message = `Hug ping received${mood ? ` — ${mood}` : ''}${note ? `\n${note}` : ''}`;
+        const bodyText = `${note ? 'Message received' : 'Hug ping received'}${mood ? ` — ${mood}` : ''}${note ? `\n${note}` : ''}`;
+        const message = userId ? `<@${userId}> ${bodyText}` : bodyText;
         const response = await fetch(webhook, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             content: message,
-            text: message,
+            text: bodyText,
             at: new Date().toISOString(),
-            allowed_mentions: { parse: [] },
+            allowed_mentions: { parse: [], users: userId ? [userId] : [] },
           }),
         });
         if (!response.ok) {
