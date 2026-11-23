@@ -18,11 +18,15 @@
       ]
     }
   ],
+  "redirects": [
+    { "source": "/future", "destination": "/surprise", "permanent": true },
+    { "source": "/future/(.*)", "destination": "/surprise/$1", "permanent": true }
+  ],
   "rewrites": [
     { "source": "/little-things", "destination": "/little-things-about-you/index.html" },
     { "source": "/little-things/(.*)", "destination": "/little-things-about-you/$1" },
-    { "source": "/future", "destination": "/future-web/index.html" },
-    { "source": "/future/(.*)", "destination": "/future-web/$1" },
+    { "source": "/surprise", "destination": "/surprise-web/index.html" },
+    { "source": "/surprise/(.*)", "destination": "/surprise-web/$1" },
     { "source": "/css/(.*)", "destination": "/open-when/css/$1" },
     { "source": "/js/(.*)", "destination": "/open-when/js/$1" },
     { "source": "/icons/(.*)", "destination": "/open-when/icons/$1" },

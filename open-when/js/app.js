@@ -88,6 +88,7 @@ unlockForm.addEventListener('submit', async (event) => {
     await enterApp();
     pinInput.value = '';
   } catch (error) {
+    stopUnlockMusic();
     if (error.status === 429) lockError.textContent = 'Too many attempts. Try again later.';
     else lockError.textContent = 'Invalid PIN. Try again.';
   } finally {

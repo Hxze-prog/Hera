@@ -46,12 +46,9 @@ export function primeUnlockMusic() {
   audio.muted = true;
   const promise = audio.play();
   if (promise) {
-    promise
-      .then(() => {
-        audio.pause();
-        audio.currentTime = 0;
-      })
-      .catch(() => {});
+    promise.catch(() => {
+      primed = false;
+    });
   }
 }
 
@@ -59,14 +56,21 @@ export function startUnlockMusic() {
   ensureTracks();
   if (playing) return;
   playing = true;
+  const first = tracks[0];
+  if (!first.paused) {
+    first.muted = false;
+    return;
+  }
   playTrack(0);
 }
 
 export function stopUnlockMusic() {
   playing = false;
+  primed = false;
   for (const audio of tracks) {
     audio.pause();
     audio.currentTime = 0;
+    audio.muted = false;
   }
 }
 

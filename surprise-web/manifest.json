@@ -1,0 +1,14 @@
+{
+  "name": "A Surprise For You",
+  "short_name": "Surprise",
+  "description": "A little surprise, just for us.",
+  "start_url": "/surprise",
+  "scope": "/surprise/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fbf6f2",
+  "theme_color": "#fbf6f2",
+  "icons": [
+    { "src": "/little-things/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+  ]
+}

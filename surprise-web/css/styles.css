@@ -1,0 +1,126 @@
+@import url('/little-things/css/styles.css');
+
+.surprise-stage {
+  min-height: 420px;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.envelope {
+  position: relative;
+  width: min(90%, 320px);
+  aspect-ratio: 1.55;
+  padding: 0;
+  border: 0;
+  background: none;
+  perspective: 900px;
+  transition: transform 320ms ease;
+}
+
+.envelope:active { transform: scale(0.98); }
+
+.envelope-body {
+  position: absolute;
+  inset: 16% 0 0;
+  border-radius: 10px 10px 18px 18px;
+  border: 1px solid rgba(59, 43, 48, 0.14);
+  background: linear-gradient(155deg, #fffaf7, #f9dfe4);
+  box-shadow: 0 18px 40px rgba(120, 80, 90, 0.2);
+  overflow: hidden;
+}
+
+.envelope-body::before,
+.envelope-body::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 56%;
+  background: rgba(229, 154, 170, 0.12);
+}
+
+.envelope-body::before {
+  left: 0;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+
+.envelope-body::after {
+  right: 0;
+  clip-path: polygon(100% 0, 0 50%, 100% 100%);
+}
+
+.envelope-flap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 62%;
+  z-index: 2;
+  background: linear-gradient(155deg, #ffe7eb, #f3b9c6);
+  border: 1px solid rgba(59, 43, 48, 0.12);
+  border-radius: 10px 10px 4px 4px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top center;
+  backface-visibility: hidden;
+  transition: transform 420ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.envelope-heart {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  z-index: 3;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(140deg, var(--accent), var(--accent-2));
+  color: #fffaf7;
+  font-size: 1.15rem;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 8px 18px rgba(120, 80, 90, 0.22);
+}
+
+.envelope.is-open {
+  transform: translateY(8px) scale(0.96);
+  pointer-events: none;
+}
+
+.envelope.is-open .envelope-flap { transform: rotateX(180deg); }
+
+.surprise-card {
+  width: min(100%, 520px);
+  padding: 1.6rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: linear-gradient(155deg, var(--surface), var(--bg-soft));
+  box-shadow: var(--shadow);
+}
+
+.surprise-card.is-visible { animation: surprise-rise 420ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+.surprise-card p {
+  margin: 0 0 0.9rem;
+  line-height: 1.6;
+}
+
+.surprise-card h2 {
+  margin: 1.2rem 0 0.8rem;
+  font-size: 1.1rem;
+  color: var(--accent-2);
+}
+
+.surprise-card p:last-child { margin-bottom: 0; }
+
+@keyframes surprise-rise {
+  from { transform: translateY(32px) scale(0.97); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .envelope,
+  .envelope-flap,
+  .surprise-card.is-visible { transition: none !important; animation: none !important; }
+}

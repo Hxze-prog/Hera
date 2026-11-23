@@ -304,6 +304,7 @@ els.unlockForm.addEventListener('submit', async (event) => {
     await enterApp();
     els.pin.value = '';
   } catch {
+    stopUnlockMusic();
     els.lockError.textContent = 'Invalid PIN. Try again.';
   } finally {
     els.unlockButton.disabled = false;

@@ -1,4 +1,4 @@
-const CACHE = 'hera-shell-v13';
+const CACHE = 'hera-shell-v15';
 
 const SHELL = [
   '/',
@@ -34,8 +34,11 @@ const SHELL = [
   '/little-things/css/styles.css',
   '/little-things/js/app.js',
   '/little-things/js/questions.js',
-  '/future',
-  '/future/index.html'
+  '/surprise',
+  '/surprise/index.html',
+  '/surprise/manifest.json',
+  '/surprise/css/styles.css',
+  '/surprise/js/app.js'
 ];
 
 self.addEventListener('install', (event) => {
@@ -71,7 +74,7 @@ async function cacheFirst(request) {
 
 function fallbackFor(path) {
   if (path.startsWith('/little-things')) return '/little-things/index.html';
-  if (path.startsWith('/future')) return '/future/index.html';
+  if (path.startsWith('/surprise')) return '/surprise/index.html';
   return '/index.html';
 }
 
