@@ -16,6 +16,7 @@ const els = {
   intro: document.getElementById('intro-text'),
   tip: document.getElementById('tip-text'),
   viewerStage: document.getElementById('viewer-stage'),
+  card: document.getElementById('question-card'),
   adminStage: document.getElementById('admin-stage'),
   adminAnswers: document.getElementById('admin-answers'),
   counter: document.getElementById('question-counter'),
@@ -33,6 +34,7 @@ let client = null;
 let answers = new Map();
 let index = 0;
 let saving = false;
+let animating = false;
 
 function answerText(number) {
   const row = answers.get(number);
@@ -55,6 +57,94 @@ function setBusy(value) {
   els.save.disabled = value;
   els.input.readOnly = value;
   els.back.disabled = value || index === 0 || index >= QUESTIONS.length;
+}
+
+const TRANSITION_FALLBACK_MS = 520;
+
+function reducedMotion() {
+  return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+}
+
+function waitForAnimation(node) {
+  return new Promise((resolve) => {
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      node.removeEventListener('animationend', onEnd);
+      resolve();
+    };
+    const onEnd = (event) => {
+      if (event.target === node) finish();
+    };
+    node.addEventListener('animationend', onEnd);
+    setTimeout(finish, TRANSITION_FALLBACK_MS);
+  });
+}
+
+function cardSide(number) {
+  return number % 2 === 1 ? 'left' : 'right';
+}
+
+async function transitionTo(nextIndex, { direction, exitingNumber }) {
+  if (reducedMotion()) {
+    index = nextIndex;
+    renderViewer();
+    setBusy(false);
+    return;
+  }
+
+  animating = true;
+  setBusy(true);
+  els.viewerStage.setAttribute('aria-busy', 'true');
+
+  const ghost = els.card.cloneNode(true);
+  ghost.removeAttribute('id');
+  ghost.querySelectorAll('[id]').forEach((node) => node.removeAttribute('id'));
+  ghost.querySelectorAll('button, textarea, input').forEach((control) => {
+    control.tabIndex = -1;
+  });
+  const ghostInput = ghost.querySelector('textarea');
+  if (ghostInput) ghostInput.value = els.input.value;
+  ghost.classList.add('question-card-ghost');
+  ghost.setAttribute('aria-hidden', 'true');
+  els.viewerStage.appendChild(ghost);
+
+  const ghostDone = waitForAnimation(ghost);
+  const cardDone = waitForAnimation(els.card);
+
+  if (direction === 'forward') {
+    const side = cardSide(exitingNumber);
+    ghost.classList.add(side === 'left' ? 'question-card--exit-left' : 'question-card--exit-right');
+  } else {
+    ghost.classList.add('question-card--sink');
+  }
+
+  index = nextIndex;
+  renderViewer();
+  els.save.disabled = true;
+  els.back.disabled = true;
+  els.input.readOnly = true;
+
+  if (direction === 'forward') {
+    els.card.classList.add('question-card--enter-stack');
+  } else {
+    const previousNumber = QUESTIONS[nextIndex]?.number ?? nextIndex + 1;
+    const side = cardSide(previousNumber);
+    els.card.classList.add(side === 'left' ? 'question-card--enter-left' : 'question-card--enter-right');
+  }
+
+  await Promise.all([ghostDone, cardDone]);
+
+  ghost.remove();
+  els.card.classList.remove(
+    'question-card--enter-stack',
+    'question-card--enter-left',
+    'question-card--enter-right'
+  );
+  els.viewerStage.removeAttribute('aria-busy');
+  animating = false;
+  setBusy(false);
 }
 
 function renderAdmin() {
@@ -113,7 +203,7 @@ function render() {
 }
 
 async function saveAnswer() {
-  if (saving || isAdmin() || index >= QUESTIONS.length) return;
+  if (animating || saving || isAdmin() || index >= QUESTIONS.length) return;
   const question = QUESTIONS[index];
   const answer = els.input.value.trim();
   if (!answer) {
@@ -137,9 +227,7 @@ async function saveAnswer() {
       row = rows?.[0] || { question_number: question.number, question_text: question.text, answer };
     }
     answers.set(question.number, row);
-    index = nextUnanswered(index);
-    saving = false;
-    render();
+    await transitionTo(nextUnanswered(index), { direction: 'forward', exitingNumber: question.number });
     toast('Saved');
   } catch {
     setBusy(false);
@@ -147,10 +235,10 @@ async function saveAnswer() {
   }
 }
 
-function goBack() {
-  if (saving || index === 0) return;
-  index = index >= QUESTIONS.length ? QUESTIONS.length - 1 : index - 1;
-  render();
+async function goBack() {
+  if (animating || saving || index === 0) return;
+  const previousIndex = index >= QUESTIONS.length ? QUESTIONS.length - 1 : index - 1;
+  await transitionTo(previousIndex, { direction: 'back' });
 }
 
 function showLock(message = '') {

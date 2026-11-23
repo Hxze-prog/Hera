@@ -168,7 +168,11 @@ main {
   font-size: 0.92rem;
 }
 
-.question-stage { min-height: 420px; }
+.question-stage {
+  position: relative;
+  min-height: 420px;
+  perspective: 1000px;
+}
 
 .question-card {
   position: relative;
@@ -181,6 +185,9 @@ main {
   background: linear-gradient(155deg, var(--surface), var(--bg-soft));
   box-shadow: var(--shadow);
   overflow: hidden;
+  backface-visibility: hidden;
+  transform-origin: center center;
+  will-change: transform, opacity;
 }
 
 .question-card::after {
@@ -192,6 +199,51 @@ main {
   opacity: 0.07;
   transform: rotate(-18deg);
   pointer-events: none;
+}
+
+.question-card-ghost {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  margin: 0;
+  pointer-events: none;
+}
+
+.question-card--exit-left { animation: card-exit-left 260ms cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.question-card--exit-right { animation: card-exit-right 260ms cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.question-card--sink { animation: card-sink 260ms cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+.question-card--enter-stack { animation: card-enter-stack 320ms cubic-bezier(0.2, 0.8, 0.2, 1) 70ms both; }
+.question-card--enter-left { animation: card-enter-left 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.question-card--enter-right { animation: card-enter-right 320ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+@keyframes card-exit-left {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
+  to { transform: translate3d(-115%, 18px, 0) rotate(-6deg); opacity: 0; }
+}
+
+@keyframes card-exit-right {
+  from { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
+  to { transform: translate3d(115%, 18px, 0) rotate(6deg); opacity: 0; }
+}
+
+@keyframes card-sink {
+  from { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+  to { transform: translate3d(0, 64px, 0) scale(0.96); opacity: 0; }
+}
+
+@keyframes card-enter-stack {
+  from { transform: translate3d(0, 64px, 0) scale(0.96); opacity: 0; }
+  to { transform: translate3d(0, 0, 0) scale(1); opacity: 1; }
+}
+
+@keyframes card-enter-left {
+  from { transform: translate3d(-115%, 18px, 0) rotate(-6deg); opacity: 0; }
+  to { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
+}
+
+@keyframes card-enter-right {
+  from { transform: translate3d(115%, 18px, 0) rotate(6deg); opacity: 0; }
+  to { transform: translate3d(0, 0, 0) rotate(0deg); opacity: 1; }
 }
 
 .question-top {
@@ -304,4 +356,14 @@ main {
   .question-card { min-height: 460px; padding: 1.25rem; }
   .question-actions { justify-content: stretch; }
   .question-actions button { flex: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .question-card-ghost { display: none; }
+  .question-card--exit-left,
+  .question-card--exit-right,
+  .question-card--sink,
+  .question-card--enter-stack,
+  .question-card--enter-left,
+  .question-card--enter-right { animation: none !important; }
 }
