@@ -1,7 +1,7 @@
 import { state } from '../state.js';
-import { el, emptyState, onModalClose, openModal, toast } from '../ui.js';
+import { el, emptyState, onModalClose, openModal, toast } from '/shared/ui.js';
 import { createAudioPlayer, createVideoPlayer } from '../media.js';
-import { getOpenedIds, markOpened } from '../session.js';
+import { getOpenedIds, markOpened } from '/shared/session.js';
 
 const EMBED_HOSTS = [
   'youtube.com',

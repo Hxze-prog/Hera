@@ -1,9 +1,9 @@
-import { getConfig } from './config.js';
-import { refresh, unlock } from './api.js';
-import { createClient } from './client.js';
+import { getConfig } from '/shared/config.js';
+import { refresh, unlock } from '/shared/api.js';
+import { createClient } from '/shared/client.js';
 import { state } from './state.js';
-import { clearSession, getAccessToken, getRefreshToken, getRole, isAdmin, loadSession, saveSession } from './session.js';
-import { closeModal, toast } from './ui.js';
+import { clearSession, getAccessToken, getRefreshToken, getRole, isAdmin, loadSession, saveSession } from '/shared/session.js';
+import { closeModal, toast } from '/shared/ui.js';
 import { loadData } from './data.js';
 import { renderAdmin } from './admin.js';
 import { renderEnvelopes } from './views/envelopes.js';

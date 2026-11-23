@@ -1,4 +1,4 @@
-import { el } from './ui.js';
+import { el } from '/shared/ui.js';
 
 function formatTime(seconds) {
   if (!Number.isFinite(seconds) || seconds < 0) return '0:00';

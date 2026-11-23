@@ -1,8 +1,8 @@
 import { state } from '../state.js';
 import { reloadPings } from '../data.js';
-import { sendPing } from '../api.js';
-import { getAccessToken } from '../session.js';
-import { el, formatDate, toast } from '../ui.js';
+import { sendPing } from '/shared/api.js';
+import { getAccessToken } from '/shared/session.js';
+import { el, formatDate, toast } from '/shared/ui.js';
 
 function timeBox(value, label) {
   return el('div', { class: 'time-box' }, [

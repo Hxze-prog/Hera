@@ -1,0 +1,14 @@
+{
+  "name": "Little Things About You",
+  "short_name": "Little Things",
+  "description": "A little question, just for us.",
+  "start_url": "/little-things",
+  "scope": "/little-things/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#fbf6f2",
+  "theme_color": "#fbf6f2",
+  "icons": [
+    { "src": "/little-things/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" }
+  ]
+}

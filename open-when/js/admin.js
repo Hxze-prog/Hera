@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { loadData, reloadSettings } from './data.js';
-import { closeModal, confirm, el, formatDate, openModal, toast } from './ui.js';
+import { closeModal, confirm, el, formatDate, openModal, toast } from '/shared/ui.js';
 import { renderDistance } from './views/distance.js';
 
 const LETTER_MOODS = [

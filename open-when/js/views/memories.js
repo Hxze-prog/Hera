@@ -1,5 +1,5 @@
 import { state } from '../state.js';
-import { el, emptyState, formatDate, onModalClose, openModal } from '../ui.js';
+import { el, emptyState, formatDate, onModalClose, openModal } from '/shared/ui.js';
 import { createAudioPlayer, createVideoPlayer } from '../media.js';
 
 export function renderMemories() {

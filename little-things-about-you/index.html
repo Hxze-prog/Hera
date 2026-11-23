@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#fbf6f2">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Little Things">
+  <title>Little Things About You</title>
+  <link rel="manifest" href="/little-things/manifest.json">
+  <link rel="icon" type="image/png" href="/little-things/assets/icon-192.png">
+  <link rel="apple-touch-icon" href="/little-things/assets/icon-192.png">
+  <link rel="stylesheet" href="/little-things/css/styles.css">
+</head>
+<body>
+  <section id="lock-screen" class="lock-screen">
+    <div class="lock-card">
+      <div class="lock-mark" aria-hidden="true">
+        <img src="/little-things/assets/icon-192.png" alt="">
+      </div>
+      <h1>Little Things About You</h1>
+      <p class="muted">A little place, just for us.</p>
+      <form id="unlock-form" class="lock-form">
+        <label for="pin">PIN</label>
+        <input id="pin" name="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4" autocomplete="off" spellcheck="false" required>
+        <button type="submit" class="primary">Unlock</button>
+      </form>
+      <p id="lock-error" class="error" role="alert"></p>
+    </div>
+  </section>
+
+  <div id="app-shell" class="app-shell" hidden>
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">
+          <img src="/little-things/assets/icon-192.png" alt="">
+        </div>
+        <div>
+          <p class="eyebrow">A little place for Hera</p>
+          <h1>Little Things About You</h1>
+        </div>
+      </div>
+      <button id="lock-button" type="button" class="ghost small">Lock</button>
+    </header>
+
+    <main>
+      <p id="intro-text" class="intro muted"></p>
+
+      <section id="viewer-stage" class="question-stage" aria-live="polite">
+        <article class="question-card">
+          <div class="question-top">
+            <span id="question-counter" class="badge"></span>
+            <span id="answer-state" class="muted small"></span>
+          </div>
+
+          <p id="question-text" class="question-text"></p>
+
+          <label id="answer-field" class="answer-field">
+            <span>Your answer</span>
+            <textarea id="answer-input" rows="5" maxlength="2000" placeholder="Type your answer here..."></textarea>
+          </label>
+
+          <div class="question-actions">
+            <button id="back-button" class="ghost" type="button" disabled>Back</button>
+            <button id="save-button" class="primary" type="button">Save answer</button>
+          </div>
+
+          <p id="hint" class="hint muted"></p>
+        </article>
+      </section>
+
+      <section id="admin-stage" hidden>
+        <div class="view-head">
+          <h2>Her Answers</h2>
+          <p class="muted">Saved in the same place as everything else.</p>
+        </div>
+        <div id="admin-answers" class="answer-list"></div>
+      </section>
+
+      <p id="tip-text" class="tip"></p>
+    </main>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <noscript>
+    <p class="noscript">This little place needs JavaScript to open.</p>
+  </noscript>
+
+  <script type="module" src="/little-things/js/app.js"></script>
+</body>
+</html>

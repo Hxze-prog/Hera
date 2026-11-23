@@ -1,29 +1,40 @@
-const CACHE = 'for-you-shell-v11';
+const CACHE = 'hera-shell-v12';
 
 const SHELL = [
   '/',
   '/index.html',
-  '/css/styles.css',
   '/manifest.json',
   '/mobile_bg.png',
   '/website_bg.png',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
   '/icons/icon-maskable-512.png',
+  '/css/styles.css',
   '/js/app.js',
-  '/js/api.js',
-  '/js/client.js',
-  '/js/config.js',
   '/js/data.js',
   '/js/media.js',
-  '/js/session.js',
   '/js/state.js',
-  '/js/ui.js',
   '/js/admin.js',
   '/js/views/envelopes.js',
   '/js/views/memories.js',
   '/js/views/vouchers.js',
-  '/js/views/distance.js'
+  '/js/views/distance.js',
+  '/shared/api.js',
+  '/shared/client.js',
+  '/shared/config.js',
+  '/shared/session.js',
+  '/shared/ui.js',
+  '/little-things',
+  '/little-things/index.html',
+  '/little-things/manifest.json',
+  '/little-things/assets/icon-192.png',
+  '/little-things/assets/mobile_bg.png',
+  '/little-things/assets/website_bg.png',
+  '/little-things/css/styles.css',
+  '/little-things/js/app.js',
+  '/little-things/js/questions.js',
+  '/future',
+  '/future/index.html'
 ];
 
 self.addEventListener('install', (event) => {
@@ -57,6 +68,12 @@ async function cacheFirst(request) {
   return response;
 }
 
+function fallbackFor(path) {
+  if (path.startsWith('/little-things')) return '/little-things/index.html';
+  if (path.startsWith('/future')) return '/future/index.html';
+  return '/index.html';
+}
+
 self.addEventListener('fetch', (event) => {
   const request = event.request;
   if (request.method !== 'GET') return;
@@ -67,9 +84,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   if (request.mode === 'navigate') {
-    event.respondWith(
-      fetch(request).catch(() => caches.match('/index.html'))
-    );
+    event.respondWith(fetch(request).catch(() => caches.match(fallbackFor(url.pathname))));
     return;
   }
   event.respondWith(cacheFirst(request));

@@ -17,5 +17,18 @@
         { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
       ]
     }
+  ],
+  "rewrites": [
+    { "source": "/little-things", "destination": "/little-things-about-you/index.html" },
+    { "source": "/little-things/(.*)", "destination": "/little-things-about-you/$1" },
+    { "source": "/future", "destination": "/future-web/index.html" },
+    { "source": "/future/(.*)", "destination": "/future-web/$1" },
+    { "source": "/css/(.*)", "destination": "/open-when/css/$1" },
+    { "source": "/js/(.*)", "destination": "/open-when/js/$1" },
+    { "source": "/icons/(.*)", "destination": "/open-when/icons/$1" },
+    { "source": "/manifest.json", "destination": "/open-when/manifest.json" },
+    { "source": "/mobile_bg.png", "destination": "/open-when/mobile_bg.png" },
+    { "source": "/website_bg.png", "destination": "/open-when/website_bg.png" },
+    { "source": "/", "destination": "/open-when/index.html" }
   ]
 }

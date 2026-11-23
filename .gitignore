@@ -1,0 +1,6 @@
+Session_Code.txt
+.vercel/
+node_modules/
+*.log
+.DS_Store
+Thumbs.db

@@ -1,6 +1,6 @@
 import { state } from '../state.js';
 import { reloadVouchers } from '../data.js';
-import { confirm, el, emptyState, formatDate, toast } from '../ui.js';
+import { confirm, el, emptyState, formatDate, toast } from '/shared/ui.js';
 
 export function renderVouchers() {
   const root = document.getElementById('vouchers-list');
