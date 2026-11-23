@@ -1,4 +1,4 @@
-import { refresh, unlock } from '/shared/api.js';
+import { getSurpriseConfig, refresh, unlock } from '/shared/api.js';
 import { primeUnlockMusic, startUnlockMusic, stopUnlockMusic } from '/shared/audio.js';
 import { clearSession, getRefreshToken, loadSession, saveSession } from '/shared/session.js';
 
@@ -12,6 +12,8 @@ const els = {
   lockButton: document.getElementById('lock-button'),
   envelope: document.getElementById('envelope'),
   card: document.getElementById('surprise-card'),
+  username: document.getElementById('surprise-username'),
+  password: document.getElementById('surprise-password'),
 };
 
 let revealed = false;
@@ -40,6 +42,20 @@ function enterApp() {
   resetSurprise();
 }
 
+async function loadSurpriseConfig() {
+  try {
+    const config = await getSurpriseConfig();
+    if (typeof config?.username === 'string' && config.username) {
+      els.username.textContent = config.username;
+    }
+    if (typeof config?.password === 'string' && config.password) {
+      els.password.textContent = config.password;
+    }
+  } catch {
+    return;
+  }
+}
+
 function revealSurprise() {
   if (revealed) return;
   revealed = true;
@@ -60,6 +76,7 @@ els.unlockForm.addEventListener('submit', async (event) => {
   try {
     const result = await unlock(els.pin.value.trim());
     saveSession(result);
+    await loadSurpriseConfig();
     startUnlockMusic();
     enterApp();
     els.pin.value = '';
@@ -87,6 +104,7 @@ async function restoreSession() {
   try {
     const result = await refresh(saved.refresh_token);
     saveSession(result);
+    await loadSurpriseConfig();
     enterApp();
   } catch {
     clearSession();

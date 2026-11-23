@@ -21,8 +21,30 @@ async function post(path, body, token) {
   return data;
 }
 
+async function get(path) {
+  const response = await fetch(path, {
+    cache: 'no-store',
+  });
+  let data = null;
+  try {
+    data = await response.json();
+  } catch {
+    data = null;
+  }
+  if (!response.ok) {
+    const error = new Error(data?.error || 'request_failed');
+    error.status = response.status;
+    throw error;
+  }
+  return data;
+}
+
 export function unlock(pin) {
   return post('/api/unlock', { pin });
+}
+
+export function getSurpriseConfig() {
+  return get('/api/surprise-config');
 }
 
 export function refresh(refreshToken) {

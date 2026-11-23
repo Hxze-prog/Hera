@@ -1,4 +1,4 @@
-const CACHE = 'hera-shell-v15';
+const CACHE = 'hera-shell-v16';
 
 const SHELL = [
   '/',
