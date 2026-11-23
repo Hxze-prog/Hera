@@ -4,6 +4,7 @@ export const state = {
   role: null,
   view: 'envelopes',
   countdownTimer: null,
+  pingTimer: null,
   data: {
     envelopes: [],
     memories: [],

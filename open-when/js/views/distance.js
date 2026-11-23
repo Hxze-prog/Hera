@@ -16,6 +16,10 @@ export function stopCountdown() {
     clearInterval(state.countdownTimer);
     state.countdownTimer = null;
   }
+  if (state.pingTimer) {
+    clearInterval(state.pingTimer);
+    state.pingTimer = null;
+  }
 }
 
 export function renderDistance() {
@@ -86,7 +90,11 @@ export function renderDistance() {
     children.push(el('div', { style: { textAlign: 'center', marginTop: '1.2rem' } }, [hug]));
   }
 
-  children.push(el('div', { id: 'last-ping' }));
+  const lastPing = el('div', { id: 'last-ping', 'aria-live': 'polite' });
+  children.push(isViewer ? lastPing : el('div', { class: 'countdown-card latest-ping-card' }, [
+    el('p', { class: 'eyebrow', text: 'Latest from her' }),
+    lastPing,
+  ]));
   root.replaceChildren(...children);
   updateLastPing(root);
 
@@ -112,6 +120,14 @@ export function renderDistance() {
     };
     tick();
     state.countdownTimer = setInterval(tick, 1000);
+    state.pingTimer = setInterval(async () => {
+      try {
+        await reloadPings();
+        updateLastPing(root);
+      } catch {
+        return;
+      }
+    }, 30000);
   }
 }
 
@@ -120,14 +136,24 @@ function updateLastPing(root) {
   if (!holder) return;
   const latest = state.data.pings?.[0];
   if (!latest) {
-    holder.replaceChildren();
+    holder.replaceChildren(state.role === 'viewer'
+      ? el('p', { class: 'muted small', text: 'Nothing yet.' })
+      : el('p', { class: 'latest-ping-text', text: 'Nothing yet.' }));
     return;
   }
   const time = formatDate(latest.pinged_at, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
   const rawNote = typeof latest.note === 'string' ? latest.note.replace(/\s+/g, ' ').trim() : '';
-  const preview = rawNote.length > 140 ? `${rawNote.slice(0, 140)}…` : rawNote;
-  holder.replaceChildren(el('p', {
-    class: 'status-note',
-    text: rawNote ? `Last message: "${preview}" · ${time}` : `Last hug: ${time}`,
-  }));
+  if (state.role === 'viewer') {
+    const preview = rawNote.length > 140 ? `${rawNote.slice(0, 140)}…` : rawNote;
+    holder.replaceChildren(el('p', {
+      class: 'status-note',
+      text: rawNote ? `Last message: "${preview}" · ${time}` : `Last hug: ${time}`,
+    }));
+    return;
+  }
+  holder.replaceChildren(
+    el('p', { class: 'latest-ping-kind', text: rawNote ? '💌 A message from her' : '🤗 A hug from her' }),
+    el('p', { class: 'latest-ping-text', text: rawNote || 'A warm hug was sent your way.' }),
+    el('p', { class: 'muted small', text: time })
+  );
 }
