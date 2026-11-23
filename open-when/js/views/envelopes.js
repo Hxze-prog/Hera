@@ -94,6 +94,43 @@ async function toggleHeart(item) {
   }
 }
 
+const expandedCategories = new Set();
+
+function categoryName(item) {
+  return item.category || item.title || 'Letter';
+}
+
+function createLetterEnvelope(item, opened) {
+  const preview = (item.message || '').replace(/\s+/g, ' ').trim().slice(0, 88);
+  const category = categoryName(item);
+  const footer = el('div', { class: 'letter-footer' }, [
+    opened.has(item.id) ? el('span', { class: 'muted small', text: 'Opened' }) : null,
+  ]);
+  if (state.role === 'viewer') footer.append(createHeartButton(item));
+  const envelope = el('div', {
+    class: 'message-envelope clickable',
+    tabIndex: 0,
+    role: 'button',
+    'aria-label': `Open ${item.title || category}`,
+  }, [
+    el('span', { class: 'message-envelope-flap', 'aria-hidden': 'true' }),
+    el('div', { class: 'message-envelope-content' }, [
+      el('p', { class: 'letter-title', text: item.title || category }),
+      el('p', { text: preview ? `${preview}${preview.length === 88 ? '...' : ''}` : 'Open to read.' }),
+    ]),
+    opened.has(item.id) || state.role === 'viewer' ? footer : null,
+  ]);
+  envelope.addEventListener('click', () => openEnvelope(item));
+  envelope.addEventListener('keydown', (event) => {
+    if (event.target !== envelope) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      openEnvelope(item);
+    }
+  });
+  return envelope;
+}
+
 export function renderEnvelopes() {
   const root = document.getElementById('envelopes-list');
   if (!root) return;
@@ -102,35 +139,43 @@ export function renderEnvelopes() {
     root.replaceChildren(emptyState('No letters yet. Check back soon.'));
     return;
   }
+  const groups = new Map();
+  for (const item of items) {
+    const category = categoryName(item);
+    if (!groups.has(category)) groups.set(category, []);
+    groups.get(category).push(item);
+  }
   const opened = getOpenedIds();
-  const cards = items.map((item) => {
-    const preview = (item.message || '').replace(/\s+/g, ' ').trim().slice(0, 88);
-    const category = item.category || item.title || 'Letter';
-    const header = el('div', { class: 'letter-card-header' }, [
-      el('span', { class: 'card-icon', text: item.icon || 'L' }),
-      el('span', { class: 'badge', text: category }),
+  const categories = [...groups.entries()].map(([category, letters], index) => {
+    const key = category;
+    const listId = `category-letters-${index}`;
+    const isExpanded = expandedCategories.has(key);
+    const letterList = el('div', { class: 'category-letters', id: listId, hidden: !isExpanded },
+      letters.map((item) => createLetterEnvelope(item, opened))
+    );
+    const toggle = el('button', {
+      type: 'button',
+      class: 'card clickable category-card',
+      'aria-expanded': isExpanded ? 'true' : 'false',
+      'aria-controls': listId,
+    }, [
+      el('div', { class: 'letter-card-header' }, [
+        el('span', { class: 'card-icon', text: letters.find((item) => item.icon)?.icon || 'L' }),
+        el('span', { class: 'badge', text: `${letters.length} ${letters.length === 1 ? 'letter' : 'letters'}` }),
+      ]),
+      el('span', { class: 'letter-title', text: category }),
+      el('span', { class: 'category-chevron', 'aria-hidden': 'true', text: '›' }),
     ]);
-    const footer = el('div', { class: 'letter-footer' }, [
-      opened.has(item.id) ? el('span', { class: 'muted small', text: 'Opened' }) : null,
-    ]);
-    if (state.role === 'viewer') footer.append(createHeartButton(item));
-    const card = el('div', { class: 'card clickable', tabIndex: 0, role: 'button' }, [
-      header,
-      el('p', { class: 'letter-title', text: item.title || category }),
-      el('p', { text: preview ? `${preview}${preview.length === 88 ? '...' : ''}` : 'Open to read.' }),
-      opened.has(item.id) || state.role === 'viewer' ? footer : null,
-    ]);
-    card.addEventListener('click', () => openEnvelope(item));
-    card.addEventListener('keydown', (event) => {
-      if (event.target !== card) return;
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault();
-        openEnvelope(item);
-      }
+    toggle.addEventListener('click', () => {
+      const next = !expandedCategories.has(key);
+      if (next) expandedCategories.add(key);
+      else expandedCategories.delete(key);
+      toggle.setAttribute('aria-expanded', String(next));
+      letterList.hidden = !next;
     });
-    return card;
+    return el('section', { class: 'letter-category' }, [toggle, letterList]);
   });
-  root.replaceChildren(...cards);
+  root.replaceChildren(...categories);
 }
 
 function openEnvelope(item) {

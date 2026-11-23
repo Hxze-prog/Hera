@@ -240,6 +240,113 @@ main {
   margin-top: 0.75rem;
 }
 
+.letter-category-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.letter-category {
+  display: flex;
+  flex-direction: column;
+}
+
+.category-card {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+}
+
+.category-card .letter-card-header { margin-bottom: 0.55rem; }
+
+.category-card .letter-title {
+  display: block;
+  padding-right: 1.6rem;
+}
+
+.category-chevron {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--accent);
+  font-size: 1.5rem;
+  line-height: 1;
+  transition: transform 160ms ease;
+}
+
+.category-card[aria-expanded='true'] .category-chevron {
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.category-letters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 0.75rem 0 0.1rem 1rem;
+  margin-left: 0.8rem;
+  border-left: 2px solid rgba(229, 154, 170, 0.35);
+}
+
+.message-envelope {
+  position: relative;
+  min-height: 96px;
+  padding: 1.5rem 1rem 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(155deg, #fffaf7, #f9dfe4);
+  box-shadow: 0 10px 24px rgba(120, 80, 90, 0.1);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.message-envelope:hover {
+  transform: translateY(-2px);
+  border-color: rgba(229, 154, 170, 0.55);
+}
+
+.message-envelope-flap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 42%;
+  background: linear-gradient(155deg, #ffe7eb, #f3b9c6);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  pointer-events: none;
+}
+
+.message-envelope-content,
+.message-envelope .letter-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.message-envelope .letter-title {
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.message-envelope p {
+  color: var(--muted);
+  font-size: 0.88rem;
+  margin-bottom: 0;
+}
+
+.message-envelope .heart-button {
+  position: relative;
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-chevron,
+  .message-envelope { transition: none; }
+}
+
 .heart-button {
   margin-left: auto;
   border: 0;
