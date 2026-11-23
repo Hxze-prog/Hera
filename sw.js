@@ -1,4 +1,4 @@
-const CACHE = 'hera-shell-v12';
+const CACHE = 'hera-shell-v13';
 
 const SHELL = [
   '/',
@@ -20,6 +20,7 @@ const SHELL = [
   '/js/views/vouchers.js',
   '/js/views/distance.js',
   '/shared/api.js',
+  '/shared/audio.js',
   '/shared/client.js',
   '/shared/config.js',
   '/shared/session.js',
@@ -49,8 +50,8 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-function isPrivatePath(path) {
-  return path.startsWith('/api/') || path.startsWith('/auth/') || path.startsWith('/rest/') || path.startsWith('/storage/');
+function isNetworkOnlyPath(path) {
+  return path.startsWith('/api/') || path.startsWith('/auth/') || path.startsWith('/rest/') || path.startsWith('/storage/') || path.startsWith('/audio/');
 }
 
 async function networkOnly(request) {
@@ -79,7 +80,7 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
-  if (isPrivatePath(url.pathname)) {
+  if (isNetworkOnlyPath(url.pathname)) {
     event.respondWith(networkOnly(request));
     return;
   }

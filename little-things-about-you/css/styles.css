@@ -309,6 +309,9 @@ main {
 
 .hint { margin: 0.8rem 0 0; text-align: right; font-size: 0.8rem; }
 
+.final-note { margin: 0.8rem 0 0; font-size: 0.9rem; line-height: 1.5; }
+.final-note a { color: var(--accent-2); font-weight: 700; }
+
 .view-head { margin-bottom: 1rem; }
 .view-head p { font-size: 0.9rem; margin-bottom: 0; }
 

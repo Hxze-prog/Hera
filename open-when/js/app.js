@@ -3,6 +3,7 @@ import { refresh, unlock } from '/shared/api.js';
 import { createClient } from '/shared/client.js';
 import { state } from './state.js';
 import { clearSession, getAccessToken, getRefreshToken, getRole, isAdmin, loadSession, saveSession } from '/shared/session.js';
+import { primeUnlockMusic, startUnlockMusic, stopUnlockMusic } from '/shared/audio.js';
 import { closeModal, toast } from '/shared/ui.js';
 import { loadData } from './data.js';
 import { renderAdmin } from './admin.js';
@@ -28,6 +29,7 @@ const renderers = {
 
 function showLock(message = '') {
   stopCountdown();
+  stopUnlockMusic();
   appShell.hidden = true;
   lockScreen.hidden = false;
   lockError.textContent = message;
@@ -77,10 +79,12 @@ async function enterApp() {
 unlockForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   lockError.textContent = '';
+  primeUnlockMusic();
   unlockButton.disabled = true;
   try {
     const result = await unlock(pinInput.value.trim());
     saveSession(result);
+    startUnlockMusic();
     await enterApp();
     pinInput.value = '';
   } catch (error) {

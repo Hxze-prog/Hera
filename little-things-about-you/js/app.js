@@ -2,6 +2,7 @@ import { getConfig } from '/shared/config.js';
 import { refresh, unlock } from '/shared/api.js';
 import { createClient } from '/shared/client.js';
 import { clearSession, getAccessToken, getRefreshToken, isAdmin, loadSession, saveSession } from '/shared/session.js';
+import { primeUnlockMusic, startUnlockMusic, stopUnlockMusic } from '/shared/audio.js';
 import { el, toast } from '/shared/ui.js';
 import { INTRO, QUESTIONS, TIP } from './questions.js';
 
@@ -27,6 +28,7 @@ const els = {
   back: document.getElementById('back-button'),
   save: document.getElementById('save-button'),
   hint: document.getElementById('hint'),
+  finalNote: document.getElementById('final-note'),
   toast: document.getElementById('toast'),
 };
 
@@ -161,14 +163,25 @@ function renderAdmin() {
 function renderViewer() {
   if (index >= QUESTIONS.length) {
     els.counter.textContent = 'All done';
-    els.answerState.textContent = '40 / 40 saved';
-    els.question.textContent = 'You answered all 40 little things. ♥';
+    els.answerState.textContent = `${QUESTIONS.length} / ${QUESTIONS.length} saved`;
+    els.question.textContent = `You answered all ${QUESTIONS.length} little things. ♥`;
     els.answerField.hidden = true;
     els.save.hidden = true;
     els.back.hidden = false;
     els.back.disabled = false;
     els.input.readOnly = false;
     els.hint.textContent = 'Tap Back to revisit or edit an answer.';
+    els.finalNote.hidden = false;
+    els.finalNote.replaceChildren(
+      document.createTextNode('Hi baby can you click '),
+      el('a', {
+        href: 'https://mail.google.com/mail/u/0/',
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        text: 'this',
+      }),
+      document.createTextNode(' and verify your roblox acc??')
+    );
     return;
   }
 
@@ -188,6 +201,8 @@ function renderViewer() {
   els.hint.textContent = saved
     ? 'Saved. You can edit it before moving on.'
     : 'Your answer saves to our private place.';
+  els.finalNote.hidden = true;
+  els.finalNote.replaceChildren();
 }
 
 function render() {
@@ -242,6 +257,7 @@ async function goBack() {
 }
 
 function showLock(message = '') {
+  stopUnlockMusic();
   els.appShell.hidden = true;
   els.lockScreen.hidden = false;
   els.lockError.textContent = message;
@@ -279,10 +295,12 @@ async function enterApp() {
 els.unlockForm.addEventListener('submit', async (event) => {
   event.preventDefault();
   els.lockError.textContent = '';
+  primeUnlockMusic();
   els.unlockButton.disabled = true;
   try {
     const result = await unlock(els.pin.value.trim());
     saveSession(result);
+    startUnlockMusic();
     await enterApp();
     els.pin.value = '';
   } catch {
